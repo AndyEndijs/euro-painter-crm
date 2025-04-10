@@ -110,8 +110,8 @@ export default function Payroll() {
         ...emp,
         days: emp.days.map((day, dIdx) => dIdx === dayIndex ? {
           ...day,
-          entries: day.entries.map((entry, eIdx) => eIdx === entryIndex ? { 
-            ...entry, 
+          entries: day.entries.map((entry, eIdx) => eIdx === entryIndex ? {
+            ...entry,
             isApproved: true,
             totalHours: entry.jobSite ? calculateHours(entry.startTime, entry.endTime, day.lunchStart, day.lunchEnd) : 0
           } : entry)
@@ -126,8 +126,8 @@ export default function Payroll() {
         ...emp,
         days: emp.days.map((day, dIdx) => dIdx === dayIndex ? {
           ...day,
-          entries: day.entries.map((entry, eIdx) => eIdx === entryIndex ? { 
-            ...entry, 
+          entries: day.entries.map((entry, eIdx) => eIdx === entryIndex ? {
+            ...entry,
             isApproved: false,
             totalHours: 0
           } : entry)
@@ -172,7 +172,7 @@ export default function Payroll() {
         ...emp,
         days: emp.days.map((day, dIdx) => dIdx === dayIndex ? {
           ...day,
-          entries: day.entries.map((entry, eIdx) => eIdx === entryIndex && entry.isApproved ? { 
+          entries: day.entries.map((entry, eIdx) => eIdx === entryIndex && entry.isApproved ? {
             ...entry,
             totalHours: entry.jobSite ? calculateHours(entry.startTime, entry.endTime, day.lunchStart, day.lunchEnd) : 0
           } : entry)
@@ -188,7 +188,7 @@ export default function Payroll() {
 
   const exportXeroJournal = () => {
     const csvRows = ["Date,Description,AccountCode,Debit,Credit,TrackingCategory1"];
-    const hourlyRate = 25; // Adjust based on your NZ rates
+    const hourlyRate = 25;
     employeeTimesheets.forEach(emp => {
       emp.days.forEach(day => {
         day.entries.forEach(entry => {
@@ -257,7 +257,7 @@ export default function Payroll() {
         </select>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <table className="excel-table">
         <thead>
           <tr>
             <th>Employee</th>
@@ -279,80 +279,59 @@ export default function Payroll() {
             .flatMap(employee =>
               employee.days.flatMap((day, dayIndex) =>
                 day.entries.map((entry, entryIndex) => {
-                  const isEditing = editingEntry?.empId === employee.employeeId && 
-                                  editingEntry?.dayIndex === dayIndex && 
-                                  editingEntry?.entryIndex === entryIndex;
+                  const isEditing = editingEntry?.empId === employee.employeeId &&
+                    editingEntry?.dayIndex === dayIndex &&
+                    editingEntry?.entryIndex === entryIndex;
 
                   return (
-                    <tr key={`${employee.employeeId}-${dayIndex}-${entryIndex}`} style={{ textAlign: "center" }}>
+                    <tr key={`${employee.employeeId}-${dayIndex}-${entryIndex}`}>
                       <td>{employee.employeeName}</td>
                       <td>{entry.date}</td>
                       <td>
                         {isEditing ? (
-                          <input
-                            type="text"
-                            value={entry.jobSite}
-                            onChange={(e) => updateEntry(employee.employeeId, dayIndex, entryIndex, "jobSite", e.target.value)}
-                          />
-                        ) : (
-                          entry.jobSite || "Not Selected"
-                        )}
+  <select
+    value={entry.jobSite}
+    onChange={(e) => updateEntry(employee.employeeId, dayIndex, entryIndex, "jobSite", e.target.value)}
+  >
+    <option value="">Select a site</option>
+    <option value="Site A">Site A</option>
+    <option value="Site B">Site B</option>
+    <option value="Site C">Site C</option>
+  </select>
+) : (
+  entry.jobSite || "Not Selected"
+)}
                       </td>
                       <td>
                         {isEditing ? (
-                          <input
-                            type="time"
-                            value={entry.startTime}
-                            onChange={(e) => updateEntry(employee.employeeId, dayIndex, entryIndex, "startTime", e.target.value)}
-                          />
-                        ) : (
-                          entry.startTime
-                        )}
+                          <input type="time" value={entry.startTime} onChange={(e) =>
+                            updateEntry(employee.employeeId, dayIndex, entryIndex, "startTime", e.target.value)} />
+                        ) : entry.startTime}
                       </td>
                       <td>
                         {isEditing ? (
-                          <input
-                            type="time"
-                            value={entry.endTime}
-                            onChange={(e) => updateEntry(employee.employeeId, dayIndex, entryIndex, "endTime", e.target.value)}
-                          />
-                        ) : (
-                          entry.endTime
-                        )}
+                          <input type="time" value={entry.endTime} onChange={(e) =>
+                            updateEntry(employee.employeeId, dayIndex, entryIndex, "endTime", e.target.value)} />
+                        ) : entry.endTime}
                       </td>
                       <td>
                         {isEditing ? (
-                          <input
-                            type="time"
-                            value={day.lunchStart}
-                            onChange={(e) => updateLunch(employee.employeeId, dayIndex, "lunchStart", e.target.value)}
-                          />
-                        ) : (
-                          day.lunchStart
-                        )}
+                          <input type="time" value={day.lunchStart} onChange={(e) =>
+                            updateLunch(employee.employeeId, dayIndex, "lunchStart", e.target.value)} />
+                        ) : day.lunchStart}
                       </td>
                       <td>
                         {isEditing ? (
-                          <input
-                            type="time"
-                            value={day.lunchEnd}
-                            onChange={(e) => updateLunch(employee.employeeId, dayIndex, "lunchEnd", e.target.value)}
-                          />
-                        ) : (
-                          day.lunchEnd
-                        )}
+                          <input type="time" value={day.lunchEnd} onChange={(e) =>
+                            updateLunch(employee.employeeId, dayIndex, "lunchEnd", e.target.value)} />
+                        ) : day.lunchEnd}
                       </td>
                       <td>{entry.isApproved && entry.jobSite ? entry.totalHours.toFixed(2) : "0.00"}</td>
                       <td>
                         {isEditing ? (
-                          <input
-                            type="text"
-                            value={entry.description}
-                            onChange={(e) => updateEntry(employee.employeeId, dayIndex, entryIndex, "description", e.target.value)}
-                          />
-                        ) : (
-                          entry.description || "None"
-                        )}
+                          <input type="text" value={entry.description} onChange={(e) =>
+                            updateEntry(employee.employeeId, dayIndex, entryIndex, "description", e.target.value)} />
+                        ) : entry.description || "None"}
                       </td>
                       <td>
                         {entry.isLocked ? (
@@ -361,9 +340,7 @@ export default function Payroll() {
                           ) : (
                             <button onClick={() => approveEntry(employee.employeeId, dayIndex, entryIndex)}>Approve</button>
                           )
-                        ) : (
-                          "Not Submitted"
-                        )}
+                        ) : "Not Submitted"}
                       </td>
                       <td>
                         {isEditing ? (
